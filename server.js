@@ -1,7 +1,7 @@
-const {Client} = require('pg')
-const express = require ("express")
+const {Client} = require('pg');
+const express = require ("express");
 const app = express();
-app.use(express.json())
+app.use(express.json());
 
 const client = new Client({
     "user" : "postgres",
@@ -9,48 +9,54 @@ const client = new Client({
     "host" : "Stephens-MBP",
     "port" : 5432,
     "database" : "todo"
-})
+});
 
 app.get("/todos", async (req, res) => {
     const rows = await readTodos();
-    res.setHeader("content-type", "text/html")
+    res.setHeader("content-type", "application/json");
                                    //might need to change back--> BEFORE "application/json", now set as "text/html"
                                     //WHY CHANGE? was getting error "Resource interpreted as Document but transferred with MIME type application/json..."
-    res.send(JSON.stringify(rows))
-})
+    res.send(JSON.stringify(rows));
+});
 
+
+//CREATE
 app.post("/todos", async (req, res) => {
-    let result = {}
+    let result = {};
     try{
         const reqJson = req.body;
-        await createTodo(reqJson.todo);
-        result.success=true;
+        result.success = await createTodo(reqJson.todo);
     }
     catch(e){
         result.success=false;
     }
     finally{
-        res.setHeader("content-type", "text/html")
-                                   //might need to change back--> BEFORE "application/json", now set as "text/html"
-                                    //WHY CHANGE? was getting error "Resource interpreted as Document but transferred with MIME type application/json..."
-        res.send(JSON.stringify(result))
+        res.setHeader("content-type", "application/json");
+        //                            //might need to change back--> BEFORE "application/json", now set as "text/html"
+        //                             //WHY CHANGE? was getting error "Resource interpreted as Document but transferred with MIME type application/json..."
+        res.send(JSON.stringify(result));
     }
-})
+   
+});
 
 
-app.listen(8080, () => console.log("Web server is listening.. on port 8080"))
 
-start()
+ 
+
+
+app.listen(8080, () => console.log("Web server is listening.. on port 8080"));
+
+start();
 async function start() {
     await connect();
-    // const todos = await readTodos();
-    // console.log(todos)
+    const todos = await readTodos();
+    console.log(todos);
 
-    // const successCreate = await createTodo("Buy groceries")
-    // console.log(`Creating was ${successCreate}`)
+    const successCreate = await createTodo("Buy groceries");
+    console.log(`Creating was ${successCreate}`);
     
-    // const successDelete = await deleteTodo(6)
-    // console.log(`Deleting was ${successDelete}`)
+    const successDelete = await deleteTodo(6);
+    console.log(`Deleting was ${successDelete}`);
     
 }
 
@@ -59,7 +65,7 @@ async function connect() {
         await client.connect(); 
     }
     catch(e) {
-        console.error(`Failed to connect ${e}`)
+        console.error(`Failed to connect ${e}`);
     }
 }
 
@@ -77,7 +83,7 @@ async function createTodo(todoText){
 
     try {
         await client.query("insert into todos (text) values ($1)", [todoText]);
-        return true
+        return true;
         }
         catch(e){
             return false;
@@ -90,7 +96,7 @@ async function deleteTodo(id){
 
     try {
         await client.query("delete from todos where id = $1", [id]);
-        return true
+        return true;
         }
         catch(e){
             return false;
