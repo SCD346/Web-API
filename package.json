@@ -1,0 +1,24 @@
+{
+  "name": "web-api",
+  "version": "1.0.0",
+  "description": "Web API with Express and PostgreSQL to Consume from Browser",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SCD346/Web-API.git"
+  },
+  "author": "SteveCD",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SCD346/Web-API/issues"
+  },
+  "homepage": "https://github.com/SCD346/Web-API#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^8.3.3"
+  }
+}
