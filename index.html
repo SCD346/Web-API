@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>MY JOB APP</h1>
+    <ol id = 'olJob'>
+
+    </ol>
+    <button id = 'btnCreate'>Have a job to post?!</button>
+    <script>
+
+    const btnCreate = document.getElementById("btnCreate")
+    btnCreate.addEventListener("click", async e=> {
+                    const jsonRequest = {}
+                    jsonRequest.job = prompt("Enter your job item!")
+                    let result = await fetch("http://localhost:8080/jobs", {method: "POST", 
+                    headers: {"content-type": "application/json"}, body: JSON.stringify(jsonRequest) })
+                    result = await result.json();
+                    readJobs()
+                    if (!result.success)  alert("FAILED! ")
+
+     })
+    readJobs();
+    async function readJobs() {
+
+        try{
+            const olJob = document.getElementById("olJob")
+            while(olJob.firstChild) olJob.removeChild(olJob.firstChild)
+
+            const result = await fetch("http://localhost:8080/jobs", {method:"GET"})
+            const jobs = await result.json();
+            jobs.forEach(t=>{
+
+                const li = document.createElement("li")
+                li.textContent = t.title;
+                //li.descriptionContent = t.description;
+                //li.id = t.id;
+                li.addEventListener("click", async e => {
+                    const jsonRequest = {}
+                    jsonRequest.id = e.target.id;
+                    let result = await fetch("http://localhost:8080/jobs", {method: "DELETE", 
+                    headers: {"content-type": "application/json"}, body: JSON.stringify(jsonRequest) })
+                    result  = await result.json();
+                    readJobs();
+                    if (!result.success)  alert("FAILED! ")
+    
+                })
+                olJob.appendChild(li)
+            })
+        }
+        catch (e) {
+            console.log("Error reading the jobs.")
+        }
+
+    }
+    </script>
+</body>
+</html>
